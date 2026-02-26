@@ -51,6 +51,13 @@
             box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
         
+        .prize-info small {
+            font-size: 16px;
+            display: block;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+        
         .join-btn {
             display: block;
             width: 100%;
@@ -150,12 +157,29 @@
             word-break: break-all;
             border: 1px dashed #667eea;
             color: #333;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .referral-link:hover {
+            background: #f0f0f0;
+        }
+        
+        .referral-link:active {
+            background: #e0e0e0;
         }
         
         .loading {
             text-align: center;
             color: #666;
             padding: 20px;
+        }
+        
+        .error-message {
+            text-align: center;
+            color: #f5576c;
+            padding: 20px;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -178,9 +202,11 @@
             </div>
         </div>
         
-        <div class="referral-info" id="referralInfo">
+        <div class="referral-info">
             <div>👥 Приглашай друзей и увеличивай шансы!</div>
-            <div class="referral-link" id="referralLink">Загрузка...</div>
+            <div class="referral-link" id="referralLink" onclick="copyReferralLink()">
+                Загрузка...
+            </div>
         </div>
     </div>
 
@@ -189,31 +215,44 @@
         tg.expand();
         tg.ready();
         
-        // Получаем user_id из URL
+        // Получаем user_id из URL или из Telegram
         const urlParams = new URLSearchParams(window.location.search);
         let userId = urlParams.get('user_id');
-        let username = tg.initDataUnsafe?.user?.username || 'User';
+        let username = tg.initDataUnsafe?.user?.username || tg.initDataUnsafe?.user?.first_name || 'User';
         
         if (!userId && tg.initDataUnsafe?.user) {
             userId = tg.initDataUnsafe.user.id;
         }
         
-        // API endpoint (замени на свой)
-        const API_URL = 'https://твой-сайт.com/api';
+        // API endpoint - ЗАМЕНИ НА СВОЙ URL!
+        const API_URL = 'http://127.0.0.1:5000';  // Для локального теста
+        // const API_URL = 'https://твой-сайт.com';  // Для продакшена
+        
+        console.log('User ID:', userId);
+        console.log('API URL:', API_URL);
         
         async function loadContestData() {
             try {
-                const response = await fetch(`${API_URL}/contest-data?user_id=${userId}`);
+                const response = await fetch(`${API_URL}/api/contest-data?user_id=${userId}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const data = await response.json();
+                console.log('Data received:', data);
                 
                 if (data.contest) {
                     document.getElementById('prizeInfo').innerHTML = 
                         `🎁 ПРИЗ: ${data.contest.prize}<br><small>${data.contest.title}</small>`;
-                    
-                    if (data.alreadyJoined) {
-                        document.getElementById('joinBtn').disabled = true;
-                        document.getElementById('joinBtn').innerHTML = '✓ ВЫ УЧАСТВУЕТЕ';
-                    }
+                } else {
+                    document.getElementById('prizeInfo').innerHTML = '😔 Нет активного конкурса';
+                    document.getElementById('joinBtn').disabled = true;
+                }
+                
+                if (data.alreadyJoined) {
+                    document.getElementById('joinBtn').disabled = true;
+                    document.getElementById('joinBtn').innerHTML = '✓ ВЫ УЧАСТВУЕТЕ';
                 }
                 
                 if (data.referralLink) {
@@ -223,8 +262,10 @@
                 updateParticipantsList(data.participants);
                 
             } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('prizeInfo').innerHTML = 'Ошибка загрузки';
+                console.error('Error loading data:', error);
+                document.getElementById('prizeInfo').innerHTML = '❌ Ошибка загрузки';
+                document.getElementById('participantsList').innerHTML = 
+                    '<div class="error-message">Не удалось загрузить данные</div>';
             }
         }
         
@@ -240,7 +281,7 @@
             let html = '';
             
             participants.forEach((p, index) => {
-                let chance = ((p.tickets / totalTickets) * 100).toFixed(1);
+                let chance = totalTickets > 0 ? ((p.tickets / totalTickets) * 100).toFixed(1) : '0';
                 html += `
                     <div class="participant">
                         <div class="rank">${index + 1}</div>
@@ -262,22 +303,26 @@
             btn.innerHTML = '⏳ ОТПРАВКА...';
             
             try {
-                const response = await fetch(`${API_URL}/join-contest`, {
+                const response = await fetch(`${API_URL}/api/join-contest`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        user_id: userId,
+                        user_id: parseInt(userId),
                         username: username
                     })
                 });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 
                 const data = await response.json();
                 
                 if (data.success) {
                     btn.innerHTML = '✓ ВЫ УЧАСТВУЕТЕ';
-                    loadContestData();
+                    loadContestData(); // Обновляем список
                     tg.showAlert('🎉 Вы успешно участвуете в конкурсе! Приглашайте друзей для повышения шансов!');
                 } else {
                     btn.disabled = false;
@@ -285,14 +330,32 @@
                     tg.showAlert(data.message || 'Ошибка при участии');
                 }
             } catch (error) {
+                console.error('Error joining contest:', error);
                 btn.disabled = false;
                 btn.innerHTML = 'ПРИНЯТЬ УЧАСТИЕ';
-                tg.showAlert('Произошла ошибка');
+                tg.showAlert('❌ Произошла ошибка при подключении к серверу');
+            }
+        }
+        
+        function copyReferralLink() {
+            const linkElement = document.getElementById('referralLink');
+            const link = linkElement.innerText;
+            
+            if (link && link !== 'Загрузка...') {
+                navigator.clipboard.writeText(link).then(() => {
+                    tg.showAlert('🔗 Ссылка скопирована! Отправь её друзьям');
+                }).catch(() => {
+                    tg.showAlert('❌ Не удалось скопировать');
+                });
             }
         }
         
         // Загружаем данные при открытии
-        loadContestData();
+        if (userId) {
+            loadContestData();
+        } else {
+            document.getElementById('prizeInfo').innerHTML = '❌ Ошибка: не удалось определить пользователя';
+        }
         
         // Обновляем список каждые 10 секунд
         setInterval(loadContestData, 10000);
