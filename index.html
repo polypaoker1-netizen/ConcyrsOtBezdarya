@@ -14,91 +14,235 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0a2f1f 0%, #1a4f2a 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Фоновые элементы */
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 50%);
+            animation: rotate 30s linear infinite;
+            z-index: 0;
+        }
+        
+        body::after {
+            content: '💰';
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 100px;
+            opacity: 0.1;
+            transform: rotate(15deg);
+            z-index: 0;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
         
         .container {
             max-width: 600px;
             width: 100%;
-            background: white;
-            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
             padding: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(255,215,0,0.3);
         }
         
         h1 {
-            color: #333;
+            color: #0a2f1f;
             text-align: center;
             margin-bottom: 30px;
-            font-size: 28px;
+            font-size: 32px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        h1::after {
+            content: '✨';
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            font-size: 24px;
+        }
+        
+        h1::before {
+            content: '✨';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            font-size: 24px;
         }
         
         .prize {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, #b8860b 0%, #daa520 100%);
             color: white;
-            padding: 20px;
-            border-radius: 15px;
+            padding: 25px;
+            border-radius: 20px;
             text-align: center;
             margin-bottom: 30px;
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
+            box-shadow: 0 10px 20px rgba(184,134,11,0.3);
+            border: 2px solid #ffd700;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .prize::before {
+            content: '🏆';
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 40px;
+            opacity: 0.3;
+        }
+        
+        .prize::after {
+            content: '🏆';
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 40px;
+            opacity: 0.3;
         }
         
         .prize small {
-            font-size: 16px;
+            font-size: 18px;
             display: block;
-            margin-top: 5px;
+            margin-top: 10px;
+            opacity: 0.9;
+            font-weight: normal;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            background: linear-gradient(135deg, #1a4f2a 0%, #0a2f1f 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            font-weight: bold;
+        }
+        
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            color: #ffd700;
+        }
+        
+        .stat-label {
+            font-size: 12px;
             opacity: 0.9;
         }
         
         .join-btn {
             width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            background: linear-gradient(135deg, #b8860b 0%, #daa520 100%);
             color: white;
             border: none;
-            border-radius: 15px;
-            font-size: 20px;
+            border-radius: 50px;
+            font-size: 22px;
             font-weight: bold;
             cursor: pointer;
             margin-bottom: 30px;
-            transition: transform 0.2s;
+            transition: all 0.3s;
+            box-shadow: 0 10px 20px rgba(184,134,11,0.3);
+            border: 2px solid #ffd700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .join-btn::before {
+            content: '🎁';
+            position: absolute;
+            left: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            transition: left 0.3s;
+        }
+        
+        .join-btn:hover::before {
+            left: 20px;
         }
         
         .join-btn:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(184,134,11,0.4);
         }
         
         .join-btn:disabled {
-            opacity: 0.5;
+            opacity: 0.7;
             cursor: not-allowed;
             transform: none;
         }
         
+        .join-btn:disabled::before {
+            content: '✓';
+            left: 20px;
+        }
+        
         .top-list {
             background: #f8f9fa;
-            border-radius: 15px;
+            border-radius: 20px;
             padding: 20px;
             margin-bottom: 20px;
+            border: 2px solid #1a4f2a;
         }
         
         .top-list h2 {
-            color: #555;
+            color: #0a2f1f;
             margin-bottom: 15px;
-            font-size: 20px;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .top-list h2::before {
+            content: '🏆';
+            font-size: 28px;
         }
         
         .participant {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px;
+            padding: 15px;
             border-bottom: 1px solid #e0e0e0;
+            transition: background 0.2s;
+        }
+        
+        .participant:hover {
+            background: rgba(26,79,42,0.05);
         }
         
         .participant:last-child {
@@ -106,88 +250,157 @@
         }
         
         .rank {
-            width: 30px;
-            height: 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #b8860b 0%, #daa520 100%);
             color: white;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 16px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         
         .name {
             flex: 1;
             margin-left: 15px;
-            color: #444;
+            color: #0a2f1f;
             font-weight: 500;
         }
         
         .chance {
             font-weight: bold;
-            color: #667eea;
+            color: #b8860b;
+            font-size: 18px;
         }
         
         .referral {
             text-align: center;
-            padding: 15px;
-            background: #e8f4fd;
-            border-radius: 10px;
+            padding: 20px;
+            background: linear-gradient(135deg, #0a2f1f 0%, #1a4f2a 100%);
+            border-radius: 20px;
+            color: white;
+        }
+        
+        .referral-title {
+            font-size: 18px;
+            margin-bottom: 10px;
         }
         
         .ref-link {
-            background: white;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 10px;
-            font-size: 12px;
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 14px;
             word-break: break-all;
-            border: 1px dashed #667eea;
+            border: 2px dashed #ffd700;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s;
+            color: #ffd700;
+            font-weight: bold;
         }
         
         .ref-link:hover {
-            background: #f0f0f0;
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.02);
         }
         
         .ref-link:active {
-            background: #e0e0e0;
+            transform: scale(0.98);
         }
         
         .loading {
             text-align: center;
             color: #666;
-            padding: 20px;
+            padding: 30px;
+            font-size: 18px;
+        }
+        
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40%, 60% { content: '..'; }
+            80%, 100% { content: '...'; }
         }
         
         .error {
             text-align: center;
-            color: #f5576c;
+            color: #dc3545;
             padding: 20px;
+            font-weight: bold;
+        }
+        
+        .current-user {
+            background: rgba(184,134,11,0.1);
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #b8860b;
+            font-weight: bold;
+        }
+        
+        .timer {
+            background: rgba(0,0,0,0.05);
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 16px;
+            color: #0a2f1f;
             font-weight: bold;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🎉 УЧАСТВУЙ В КОНКУРСЕ 🎉</h1>
+        <h1>🎮 КОНКУРС ОТ БЕЗДАРЯ</h1>
         
-        <div class="prize" id="prize">Загрузка...</div>
+        <div class="prize" id="prize">
+            <span id="prizeName">Загрузка...</span>
+            <small id="contestTitle"></small>
+        </div>
         
-        <button class="join-btn" id="joinBtn" onclick="joinContest()">ПРИНЯТЬ УЧАСТИЕ</button>
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-value" id="totalParticipants">0</div>
+                <div class="stat-label">Участников</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="targetCount">100</div>
+                <div class="stat-label">Нужно для итогов</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="timeLeft">--:--</div>
+                <div class="stat-label">До итогов</div>
+            </div>
+        </div>
+        
+        <button class="join-btn" id="joinBtn" onclick="joinContest()">
+            ПРИНЯТЬ УЧАСТИЕ
+        </button>
         
         <div class="top-list">
-            <h2>🏆 ТОП-10 УЧАСТНИКОВ</h2>
-            <div id="participants"><div class="loading">Загрузка...</div></div>
+            <h2>ТОП-10 УЧАСТНИКОВ</h2>
+            <div id="participants"><div class="loading">Загрузка участников</div></div>
+            <div id="currentUserStatus" class="current-user" style="display: none;"></div>
         </div>
         
         <div class="referral">
-            <div>👥 Приглашай друзей и увеличивай шансы!</div>
+            <div class="referral-title">👥 ПРИГЛАШАЙ ДРУЗЕЙ</div>
             <div class="ref-link" id="refLink" onclick="copyLink()">Загрузка...</div>
+            <div style="margin-top: 10px; font-size: 12px; opacity: 0.8;">
+                За каждого друга +1 билет = больше шансов!
+            </div>
         </div>
+        
+        <div id="timerDisplay" class="timer" style="display: none;"></div>
     </div>
 
     <script>
@@ -195,33 +408,26 @@
         tg.expand();
         tg.ready();
         
-        // Получаем данные пользователя из Telegram
+        // Данные пользователя
         let userId = new URLSearchParams(location.search).get('user_id');
         let username = tg.initDataUnsafe?.user?.username || 
                       tg.initDataUnsafe?.user?.first_name || 
                       'User';
+        let userFullName = tg.initDataUnsafe?.user?.first_name || '';
         
         console.log('User ID:', userId);
         console.log('Username:', username);
         
-        // URL твоего сервера с API
-        const API_URL = 'https://твой-сервер.com'; // СЮДА ВСТАВИШЬ ПОТОМ
+        // URL твоего сервера (ЗАМЕНИШЬ ПОТОМ)
+        const API_URL = 'https://твой-сервер.com';
         
-        // Для теста пока используем заглушку
-        let mockData = {
-            contest: {
-                title: "Розыгрыш iPhone 15",
-                prize: "iPhone 15"
-            },
-            participants: [
-                {username: "Alex", tickets: 5},
-                {username: "Maria", tickets: 3},
-                {username: "Dmitry", tickets: 2},
-                {username: "Elena", tickets: 2},
-                {username: "Sergey", tickets: 1}
-            ],
-            joined: false,
-            referral_link: `https://t.me/bezdarlfkbf_bot?start=${userId}_1`
+        // Хранилище данных
+        let contestData = {
+            participants: [],
+            userJoined: false,
+            userTickets: 0,
+            targetCount: 100,
+            endTime: null
         };
         
         async function loadData() {
@@ -230,46 +436,106 @@
                 // const response = await fetch(`${API_URL}/get_data?user_id=${userId}`);
                 // const data = await response.json();
                 
-                // ПОКА ИСПОЛЬЗУЕМ ЗАГЛУШКУ
-                setTimeout(() => {
-                    let data = mockData;
-                    
-                    if (data.contest) {
-                        document.getElementById('prize').innerHTML = 
-                            `🎁 ПРИЗ: ${data.contest.prize}<br><small>${data.contest.title}</small>`;
-                    }
-                    
-                    if (data.joined) {
-                        document.getElementById('joinBtn').disabled = true;
-                        document.getElementById('joinBtn').innerHTML = '✓ ВЫ УЧАСТВУЕТЕ';
-                    }
-                    
-                    document.getElementById('refLink').innerHTML = data.referral_link;
-                    
-                    let html = '';
-                    if (data.participants && data.participants.length > 0) {
-                        let totalTickets = data.participants.reduce((sum, p) => sum + p.tickets, 0);
-                        
-                        data.participants.forEach((p, index) => {
-                            let chance = ((p.tickets / totalTickets) * 100).toFixed(1);
-                            html += `
-                                <div class="participant">
-                                    <div class="rank">${index + 1}</div>
-                                    <div class="name">${p.username}</div>
-                                    <div class="chance">${chance}%</div>
-                                </div>
-                            `;
-                        });
-                    } else {
-                        html = '<div class="loading">Пока нет участников. Будь первым! 🚀</div>';
-                    }
-                    document.getElementById('participants').innerHTML = html;
-                    
-                }, 1000);
+                // ПОКА ИСПОЛЬЗУЕМ ЗАГЛУШКУ С СОХРАНЕНИЕМ В localStorage
+                let savedData = localStorage.getItem('contestData');
+                
+                if (savedData) {
+                    contestData = JSON.parse(savedData);
+                } else {
+                    // Начальные данные
+                    contestData = {
+                        participants: [],
+                        userJoined: false,
+                        userTickets: 0,
+                        targetCount: 100,
+                        endTime: Date.now() + (7 * 24 * 60 * 60 * 1000) // 7 дней
+                    };
+                }
+                
+                // Обновляем интерфейс
+                updateUI();
                 
             } catch (error) {
                 console.error('Error:', error);
-                document.getElementById('prize').innerHTML = 'Ошибка загрузки';
+                document.getElementById('prizeName').innerHTML = 'Ошибка загрузки';
+            }
+        }
+        
+        function updateUI() {
+            // Приз
+            document.getElementById('prizeName').innerHTML = 'АЛМАЗ 💎';
+            document.getElementById('contestTitle').innerHTML = 'Розыгрыш настоящего алмаза';
+            
+            // Статистика
+            document.getElementById('totalParticipants').innerHTML = contestData.participants.length;
+            document.getElementById('targetCount').innerHTML = contestData.targetCount;
+            
+            // Таймер
+            if (contestData.endTime) {
+                let timeLeft = contestData.endTime - Date.now();
+                if (timeLeft > 0) {
+                    let days = Math.floor(timeLeft / (24 * 60 * 60 * 1000));
+                    let hours = Math.floor((timeLeft % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+                    let minutes = Math.floor((timeLeft % (60 * 60 * 1000)) / (60 * 1000));
+                    
+                    if (days > 0) {
+                        document.getElementById('timeLeft').innerHTML = `${days}д ${hours}ч`;
+                    } else {
+                        document.getElementById('timeLeft').innerHTML = 
+                            `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}`;
+                    }
+                } else {
+                    document.getElementById('timeLeft').innerHTML = 'Итоги!';
+                }
+            }
+            
+            // Кнопка участия
+            if (contestData.userJoined) {
+                document.getElementById('joinBtn').disabled = true;
+                document.getElementById('joinBtn').innerHTML = '✓ ВЫ УЧАСТВУЕТЕ';
+            }
+            
+            // Реферальная ссылка
+            document.getElementById('refLink').innerHTML = 
+                `https://t.me/ConcyrsOtBezdaryabot?start=${userId}_1`;
+            
+            // Топ участников
+            let participantsHtml = '';
+            if (contestData.participants.length > 0) {
+                // Сортируем по билетам
+                let sorted = [...contestData.participants].sort((a, b) => b.tickets - a.tickets);
+                let totalTickets = sorted.reduce((sum, p) => sum + p.tickets, 0);
+                
+                sorted.slice(0, 10).forEach((p, index) => {
+                    let chance = ((p.tickets / totalTickets) * 100).toFixed(1);
+                    participantsHtml += `
+                        <div class="participant">
+                            <div class="rank">${index + 1}</div>
+                            <div class="name">${p.username} ${p.user_id == userId ? '(вы)' : ''}</div>
+                            <div class="chance">${chance}%</div>
+                        </div>
+                    `;
+                });
+            } else {
+                participantsHtml = '<div class="loading">Пока нет участников. Будь первым! 🚀</div>';
+            }
+            document.getElementById('participants').innerHTML = participantsHtml;
+            
+            // Статус текущего пользователя
+            if (contestData.userJoined) {
+                let userData = contestData.participants.find(p => p.user_id == userId);
+                if (userData) {
+                    document.getElementById('currentUserStatus').style.display = 'block';
+                    document.getElementById('currentUserStatus').innerHTML = 
+                        `✅ Вы участвуете! Ваши билеты: ${userData.tickets} (пригласите ${userData.tickets}/1 друзей)`;
+                }
+            } else {
+                document.getElementById('currentUserStatus').style.display = 'none';
+            }
+            
+            // Проверка на итоги
+            if (contestData.participants.length >= contestData.targetCount) {
+                showResults();
             }
         }
         
@@ -278,7 +544,7 @@
             if (btn.disabled) return;
             
             btn.disabled = true;
-            btn.innerHTML = '⏳ ОТПРАВКА...';
+            btn.innerHTML = '⏳...';
             
             try {
                 // ТУТ БУДЕТ ЗАПРОС К ТВОЕМУ СЕРВЕРУ
@@ -292,22 +558,30 @@
                 // });
                 // const data = await response.json();
                 
-                // ПОКА ИСПОЛЬЗУЕМ ЗАГЛУШКУ
+                // ПОКА СОХРАНЯЕМ В localStorage
                 setTimeout(() => {
-                    btn.innerHTML = '✓ ВЫ УЧАСТВУЕТЕ';
+                    // Проверяем, не участвует ли уже
+                    if (contestData.userJoined) {
+                        btn.disabled = true;
+                        btn.innerHTML = '✓ ВЫ УЧАСТВУЕТЕ';
+                        return;
+                    }
                     
-                    // Добавляем пользователя в топ
-                    mockData.joined = true;
-                    mockData.participants.push({
+                    // Добавляем пользователя
+                    contestData.userJoined = true;
+                    contestData.participants.push({
+                        user_id: parseInt(userId),
                         username: username,
                         tickets: 1
                     });
                     
-                    // Сортируем по билетам
-                    mockData.participants.sort((a, b) => b.tickets - a.tickets);
+                    // Сохраняем
+                    localStorage.setItem('contestData', JSON.stringify(contestData));
                     
-                    loadData();
-                    tg.showAlert('🎉 Ты участвуешь! Приглашай друзей чтобы увеличить шансы!');
+                    // Обновляем интерфейс
+                    updateUI();
+                    
+                    tg.showAlert('🎉 Ты участвуешь! Приглашай друзей чтобы получить больше билетов!');
                 }, 1000);
                 
             } catch (error) {
@@ -322,18 +596,32 @@
             let link = document.getElementById('refLink').innerText;
             if (link && link != 'Загрузка...') {
                 navigator.clipboard.writeText(link).then(() => {
-                    tg.showAlert('🔗 Реферальная ссылка скопирована!');
+                    tg.showAlert('🔗 Ссылка скопирована! За каждого друга +1 билет!');
                 }).catch(() => {
                     tg.showAlert('❌ Не удалось скопировать');
                 });
             }
         }
         
+        function showResults() {
+            // Сортируем участников
+            let sorted = [...contestData.participants].sort((a, b) => b.tickets - a.tickets);
+            let winners = sorted.slice(0, 3); // Топ-3 победителя
+            
+            let message = '🏆 ИТОГИ КОНКУРСА 🏆\n\n';
+            winners.forEach((w, i) => {
+                message += `${i+1}. ${w.username} - ${w.tickets} билетов\n`;
+            });
+            
+            tg.showAlert(message);
+        }
+        
+        // Загружаем данные
         if (userId) {
             loadData();
-            setInterval(loadData, 5000); // Обновляем каждые 5 секунд
+            setInterval(loadData, 5000);
         } else {
-            document.getElementById('prize').innerHTML = '❌ Ошибка: нет user_id';
+            document.getElementById('prizeName').innerHTML = '❌ Ошибка: нет user_id';
         }
     </script>
 </body>
