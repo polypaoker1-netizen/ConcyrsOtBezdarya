@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конкурс в Telegram</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        .prize-info {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .join-btn {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 30px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .join-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+        
+        .join-btn:active {
+            transform: translateY(0);
+        }
+        
+        .join-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .top-list {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+        }
+        
+        .top-list h2 {
+            color: #555;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .participant {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .participant:last-child {
+            border-bottom: none;
+        }
+        
+        .rank {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .name {
+            flex: 1;
+            margin-left: 15px;
+            font-weight: 500;
+            color: #444;
+        }
+        
+        .chance {
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .referral-info {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f4fd;
+            border-radius: 10px;
+            color: #0369a1;
+            font-size: 14px;
+        }
+        
+        .referral-link {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 12px;
+            word-break: break-all;
+            border: 1px dashed #667eea;
+            color: #333;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 УЧАСТВУЙ В КОНКУРСЕ 🎉</h1>
+        
+        <div class="prize-info" id="prizeInfo">
+            Загрузка...
+        </div>
+        
+        <button class="join-btn" id="joinBtn" onclick="joinContest()">
+            ПРИНЯТЬ УЧАСТИЕ
+        </button>
+        
+        <div class="top-list">
+            <h2>🏆 ТОП-10 УЧАСТНИКОВ</h2>
+            <div id="participantsList">
+                <div class="loading">Загрузка участников...</div>
+            </div>
+        </div>
+        
+        <div class="referral-info" id="referralInfo">
+            <div>👥 Приглашай друзей и увеличивай шансы!</div>
+            <div class="referral-link" id="referralLink">Загрузка...</div>
+        </div>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.ready();
+        
+        // Получаем user_id из URL
+        const urlParams = new URLSearchParams(window.location.search);
+        let userId = urlParams.get('user_id');
+        let username = tg.initDataUnsafe?.user?.username || 'User';
+        
+        if (!userId && tg.initDataUnsafe?.user) {
+            userId = tg.initDataUnsafe.user.id;
+        }
+        
+        // API endpoint (замени на свой)
+        const API_URL = 'https://твой-сайт.com/api';
+        
+        async function loadContestData() {
+            try {
+                const response = await fetch(`${API_URL}/contest-data?user_id=${userId}`);
+                const data = await response.json();
+                
+                if (data.contest) {
+                    document.getElementById('prizeInfo').innerHTML = 
+                        `🎁 ПРИЗ: ${data.contest.prize}<br><small>${data.contest.title}</small>`;
+                    
+                    if (data.alreadyJoined) {
+                        document.getElementById('joinBtn').disabled = true;
+                        document.getElementById('joinBtn').innerHTML = '✓ ВЫ УЧАСТВУЕТЕ';
+                    }
+                }
+                
+                if (data.referralLink) {
+                    document.getElementById('referralLink').innerHTML = data.referralLink;
+                }
+                
+                updateParticipantsList(data.participants);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('prizeInfo').innerHTML = 'Ошибка загрузки';
+            }
+        }
+        
+        function updateParticipantsList(participants) {
+            const listElement = document.getElementById('participantsList');
+            
+            if (!participants || participants.length === 0) {
+                listElement.innerHTML = '<div class="loading">Пока нет участников. Будь первым! 🚀</div>';
+                return;
+            }
+            
+            let totalTickets = participants.reduce((sum, p) => sum + p.tickets, 0);
+            let html = '';
+            
+            participants.forEach((p, index) => {
+                let chance = ((p.tickets / totalTickets) * 100).toFixed(1);
+                html += `
+                    <div class="participant">
+                        <div class="rank">${index + 1}</div>
+                        <div class="name">${p.username}</div>
+                        <div class="chance">${chance}%</div>
+                    </div>
+                `;
+            });
+            
+            listElement.innerHTML = html;
+        }
+        
+        async function joinContest() {
+            const btn = document.getElementById('joinBtn');
+            
+            if (btn.disabled) return;
+            
+            btn.disabled = true;
+            btn.innerHTML = '⏳ ОТПРАВКА...';
+            
+            try {
+                const response = await fetch(`${API_URL}/join-contest`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        username: username
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    btn.innerHTML = '✓ ВЫ УЧАСТВУЕТЕ';
+                    loadContestData();
+                    tg.showAlert('🎉 Вы успешно участвуете в конкурсе! Приглашайте друзей для повышения шансов!');
+                } else {
+                    btn.disabled = false;
+                    btn.innerHTML = 'ПРИНЯТЬ УЧАСТИЕ';
+                    tg.showAlert(data.message || 'Ошибка при участии');
+                }
+            } catch (error) {
+                btn.disabled = false;
+                btn.innerHTML = 'ПРИНЯТЬ УЧАСТИЕ';
+                tg.showAlert('Произошла ошибка');
+            }
+        }
+        
+        // Загружаем данные при открытии
+        loadContestData();
+        
+        // Обновляем список каждые 10 секунд
+        setInterval(loadContestData, 10000);
+    </script>
+</body>
+</html>
